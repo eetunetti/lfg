@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import Panel from './components/panel'
+import Button from './components/Button/button';
+import NavigationBar from './components/NavigationBar/NavigationBar';
 
 interface MessageResponse {
   message: string;
@@ -19,7 +19,9 @@ function App() {
 
   return (
     <>
+    <NavigationBar></NavigationBar>
         <Panel panelColor='text-red-500'></Panel>
+        <Button onClick={() => console.log("Hello from Button")} size='small' type='primary' text='This is a button'></Button>
         <p>message: {message}</p>
     </>
   )
