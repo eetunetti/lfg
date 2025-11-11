@@ -1,26 +1,22 @@
-AWS from '@aws-sdk/client-dynamodb';
-
-const { 
-    DynamoDBClient, 
-    PutItemCommand, 
-    GetItemCommand, 
-    CreateTableCommand, 
+import {
+    DynamoDBClient,
+    PutItemCommand,
+    GetItemCommand,
+    CreateTableCommand,
     DescribeTableCommand,
     ResourceNotFoundException,
-} = AWS;
-
-// For types, reference them from AWS:
-type CreateTableCommandInput = AWS.CreateTableCommandInput;
-type PutItemCommandInput = AWS.PutItemCommandInput;
-type GetItemCommandInput = AWS.GetItemCommandInput;
+    type CreateTableCommandInput,
+    type PutItemCommandInput,
+    type GetItemCommandInput,
+} from '@aws-sdk/client-dynamodb';
 
 const client = new DynamoDBClient({
-    region: 'eu-east-1',
-    endpoint: 'http://localhost:8000',
+    region: process.env.AWS_REGION ?? 'eu-west-1',
+    endpoint: process.env.DYNAMODB_ENDPOINT ?? 'http://localhost:8000',
     credentials: {
-        accessKeyId: 'fake',
-        secretAccessKey: 'fake'
-    }
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID ?? 'fake',
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? 'fake',
+    },
 });
 
 export const createTable = async (tableName: string, params: CreateTableCommandInput) => {
@@ -47,8 +43,9 @@ export const createTable = async (tableName: string, params: CreateTableCommandI
     return true;
 };
 
-export const put = async (tableName: string, params:PutItemCommandInput) => {
+export const put = async (tableName: string, params: PutItemCommandInput) => {
     try {
+        if (!params.TableName) params.TableName = tableName;
         const data = await client.send(new PutItemCommand(params));
         console.log('PutItem succeeded: ', data);
     } catch (err) {
@@ -56,8 +53,9 @@ export const put = async (tableName: string, params:PutItemCommandInput) => {
     }
 };
 
-export const get = async (tableName: string, params:GetItemCommandInput) => {
+export const get = async (tableName: string, params: GetItemCommandInput) => {
     try {
+        if (!params.TableName) params.TableName = tableName;
         const data = await client.send(new GetItemCommand(params));
         if (data.Item) {
             console.log('GetItem succeeded: ', data.Item);

@@ -1,4 +1,4 @@
-import { 
+import {
     ScalarAttributeType,
     KeyType,
     CreateTableCommandInput,
@@ -32,36 +32,39 @@ const createProjectsTable = async () => {
     return createTable(tableName, params);
 }
 
-const putProject = async (groupId: string, groupName: string, description?: string, creationDate: Date, members: User[], admins: User[]) => {
-    const params: PutItemCommandInput = { 
+const putProject = async (groupId: string, groupName: string, creationDate: Date, members: User[], admins: User[], description?: string) => {
+    const params: PutItemCommandInput = {
         TableName: tableName,
         Item: {
-            groupId: { S: '123' },
-            name: { S: 'Eetu Netti' },
+            groupId: { S: groupId },
+            name: { S: groupName },
+            creationDate: { S: creationDate },
+            content: {
+                members:
         }
-    }
+        }
     return put(tableName, params)
-};
+    };
 
-const getProject = async () => {
-    const params: GetItemCommandInput = {
-        TableName: tableName,
-        Key: {
-            userId: { S: '123' }
+    const getProject = async () => {
+        const params: GetItemCommandInput = {
+            TableName: tableName,
+            Key: {
+                userId: { S: '123' }
+            }
         }
+        return get(tableName, params);
+    };
+
+
+    const run = async () => {
+        const tableReady = await createProjectsTable();
+        if (!tableReady) {
+            console.error("Table creation failed. Exiting");
+            return;
+        }
+        await putProject();
+        await getProject();
     }
-    return get(tableName, params);
-};
 
-
-const run = async () => {
-    const tableReady = await createProjectsTable();
-    if (!tableReady) {
-        console.error("Table creation failed. Exiting");
-        return;
-    }
-    await putProject();
-    await getProject();
-}
-
-run();
+    run();
